@@ -2,30 +2,24 @@ import ArticleCard from '@/components/article-card';
 import { SearchBar } from '@/components/search-bar';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { IconSymbol } from '@/components/ui/icon-symbol';
 import HeaderBar from '@/components/ui/HeaderBar';
+import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Colors } from '@/constants/theme';
 import { useGetEverythingQuery } from '@/data/api/news-api';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useDebounce } from '@/hooks/use-debounce';
 import { useSelectedSources } from '@/hooks/use-selected-sources';
 import { useState } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, Switch } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function ExploreScreen() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchAllSources, setSearchAllSources] = useState(false);
   const debouncedSearchQuery = useDebounce(searchQuery, 400);
-  const { selectedSourceIds, hasSources, isInitialized } = useSelectedSources();
+  const { isInitialized } = useSelectedSources();
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const insets = useSafeAreaInsets();
-
-  // Build sources query parameter
-  const sourcesParam = !searchAllSources && hasSources && selectedSourceIds.length > 0
-    ? selectedSourceIds.join(',')
-    : undefined;
 
   // Only search if query is not empty
   const shouldSearch = debouncedSearchQuery.trim().length > 0;
@@ -33,7 +27,6 @@ export default function ExploreScreen() {
   const { data, isLoading, error, isFetching } = useGetEverythingQuery(
     {
       q: debouncedSearchQuery.trim(),
-      sources: sourcesParam,
       sortBy: 'publishedAt',
       language: 'en',
       pageSize: 20,
@@ -59,28 +52,6 @@ export default function ExploreScreen() {
           placeholder="Search for news articles..."
           isLoading={isFetching && shouldSearch}
         />
-
-      {hasSources && (
-        <ThemedView style={styles.filterContainer}>
-          <ThemedView style={styles.filterRow}>
-            <ThemedView style={styles.filterLabelContainer}>
-              <IconSymbol name="newspaper" size={18} color={colors.icon} />
-              <ThemedText style={styles.filterLabel}>Search in selected sources only</ThemedText>
-            </ThemedView>
-            <Switch
-              value={!searchAllSources}
-              onValueChange={(value) => setSearchAllSources(!value)}
-              trackColor={{ false: colors.tabIconDefault, true: colors.tint }}
-              thumbColor={colors.background}
-            />
-          </ThemedView>
-          {!searchAllSources && (
-            <ThemedText style={styles.filterHint}>
-              Searching in {selectedSourceIds.length} selected source{selectedSourceIds.length !== 1 ? 's' : ''}
-            </ThemedText>
-          )}
-        </ThemedView>
-      )}
 
         {!shouldSearch && (
           <ThemedView style={styles.emptyContainer}>
@@ -148,33 +119,6 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     flex: 1,
-  },
-  filterContainer: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: 'rgba(128, 128, 128, 0.2)',
-  },
-  filterRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  filterLabelContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    flex: 1,
-  },
-  filterLabel: {
-    fontSize: 14,
-    flex: 1,
-  },
-  filterHint: {
-    fontSize: 12,
-    opacity: 0.6,
-    marginTop: 8,
   },
   centerContainer: {
     flex: 1,
