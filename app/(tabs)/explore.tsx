@@ -3,6 +3,7 @@ import { SearchBar } from '@/components/search-bar';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
+import HeaderBar from '@/components/ui/HeaderBar';
 import { Colors } from '@/constants/theme';
 import { useGetEverythingQuery } from '@/data/api/news-api';
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -10,6 +11,7 @@ import { useDebounce } from '@/hooks/use-debounce';
 import { useSelectedSources } from '@/hooks/use-selected-sources';
 import { useState } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, Switch } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function ExploreScreen() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -18,6 +20,7 @@ export default function ExploreScreen() {
   const { selectedSourceIds, hasSources, isInitialized } = useSelectedSources();
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
+  const insets = useSafeAreaInsets();
 
   // Build sources query parameter
   const sourcesParam = !searchAllSources && hasSources && selectedSourceIds.length > 0
@@ -44,18 +47,18 @@ export default function ExploreScreen() {
   const hasResults = articles.length > 0;
   const showEmptyState = shouldSearch && !isLoading && !error && !hasResults;
 
+  const headerHeight = insets.top + 56; // safe area + header content (48) + padding (8)
+
   return (
     <ThemedView style={styles.container}>
-      <ThemedView style={styles.header}>
-        <ThemedText type="title" style={styles.title}>Search News</ThemedText>
-      </ThemedView>
-
-      <SearchBar
-        value={searchQuery}
-        onChangeText={setSearchQuery}
-        placeholder="Search for news articles..."
-        isLoading={isFetching && shouldSearch}
-      />
+      <HeaderBar title="Search News" />
+      <ThemedView style={[styles.contentContainer, { paddingTop: headerHeight }]}>
+        <SearchBar
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholder="Search for news articles..."
+          isLoading={isFetching && shouldSearch}
+        />
 
       {hasSources && (
         <ThemedView style={styles.filterContainer}>
@@ -79,61 +82,62 @@ export default function ExploreScreen() {
         </ThemedView>
       )}
 
-      {!shouldSearch && (
-        <ThemedView style={styles.emptyContainer}>
-          <IconSymbol name="magnifyingglass" size={64} color={colors.icon} />
-          <ThemedText type="subtitle" style={styles.emptyTitle}>Start Searching</ThemedText>
-          <ThemedText style={styles.emptyText}>
-            Enter a search query above to find news articles
-          </ThemedText>
-        </ThemedView>
-      )}
-
-      {isLoading && shouldSearch && (
-        <ThemedView style={styles.centerContainer}>
-          <ActivityIndicator size="large" color={colors.tint} />
-          <ThemedText style={styles.loadingText}>Searching...</ThemedText>
-        </ThemedView>
-      )}
-
-      {error && shouldSearch && (
-        <ThemedView style={styles.centerContainer}>
-          <IconSymbol name="exclamationmark.triangle.fill" size={48} color={colors.icon} />
-          <ThemedText type="title" style={styles.errorTitle}>Search Failed</ThemedText>
-          <ThemedText style={styles.errorText}>
-            {error && 'data' in error
-              ? (error.data as { message?: string })?.message || 'An error occurred'
-              : 'Please check your internet connection and try again.'}
-          </ThemedText>
-        </ThemedView>
-      )}
-
-      {showEmptyState && (
-        <ThemedView style={styles.centerContainer}>
-          <IconSymbol name="doc.text.magnifyingglass" size={64} color={colors.icon} />
-          <ThemedText type="subtitle" style={styles.emptyTitle}>No Results Found</ThemedText>
-          <ThemedText style={styles.emptyText}>
-            Try adjusting your search query or filters
-          </ThemedText>
-        </ThemedView>
-      )}
-
-      {hasResults && (
-        <>
-          <ThemedView style={styles.resultsHeader}>
-            <ThemedText style={styles.resultsCount}>
-              {data?.totalResults || articles.length} result{articles.length !== 1 ? 's' : ''} found
+        {!shouldSearch && (
+          <ThemedView style={styles.emptyContainer}>
+            <IconSymbol name="magnifyingglass" size={64} color={colors.icon} />
+            <ThemedText type="subtitle" style={styles.emptyTitle}>Start Searching</ThemedText>
+            <ThemedText style={styles.emptyText}>
+              Enter a search query above to find news articles
             </ThemedText>
           </ThemedView>
-          <FlatList
-            data={articles}
-            renderItem={({ item }) => <ArticleCard article={item} />}
-            keyExtractor={(item, index) => item.url || `search-article-${index}`}
-            contentContainerStyle={styles.listContent}
-            showsVerticalScrollIndicator={false}
-          />
-        </>
-      )}
+        )}
+
+        {isLoading && shouldSearch && (
+          <ThemedView style={styles.centerContainer}>
+            <ActivityIndicator size="large" color={colors.tint} />
+            <ThemedText style={styles.loadingText}>Searching...</ThemedText>
+          </ThemedView>
+        )}
+
+        {error && shouldSearch && (
+          <ThemedView style={styles.centerContainer}>
+            <IconSymbol name="exclamationmark.triangle.fill" size={48} color={colors.icon} />
+            <ThemedText type="title" style={styles.errorTitle}>Search Failed</ThemedText>
+            <ThemedText style={styles.errorText}>
+              {error && 'data' in error
+                ? (error.data as { message?: string })?.message || 'An error occurred'
+                : 'Please check your internet connection and try again.'}
+            </ThemedText>
+          </ThemedView>
+        )}
+
+        {showEmptyState && (
+          <ThemedView style={styles.centerContainer}>
+            <IconSymbol name="doc.text.magnifyingglass" size={64} color={colors.icon} />
+            <ThemedText type="subtitle" style={styles.emptyTitle}>No Results Found</ThemedText>
+            <ThemedText style={styles.emptyText}>
+              Try adjusting your search query or filters
+            </ThemedText>
+          </ThemedView>
+        )}
+
+        {hasResults && (
+          <>
+            <ThemedView style={styles.resultsHeader}>
+              <ThemedText style={styles.resultsCount}>
+                {data?.totalResults || articles.length} result{articles.length !== 1 ? 's' : ''} found
+              </ThemedText>
+            </ThemedView>
+            <FlatList
+              data={articles}
+              renderItem={({ item }) => <ArticleCard article={item} />}
+              keyExtractor={(item, index) => item.url || `search-article-${index}`}
+              contentContainerStyle={styles.listContent}
+              showsVerticalScrollIndicator={false}
+            />
+          </>
+        )}
+      </ThemedView>
     </ThemedView>
   );
 }
@@ -142,12 +146,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  header: {
-    padding: 16,
-    paddingTop: 8,
-  },
-  title: {
-    marginBottom: 8,
+  contentContainer: {
+    flex: 1,
   },
   filterContainer: {
     paddingHorizontal: 16,
