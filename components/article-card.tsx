@@ -1,7 +1,10 @@
-import { StyleSheet, TouchableOpacity, Image, Linking, Platform } from 'react-native';
+import { EverythingArticle } from '@/data/types/everything-news.type';
+import { TopHeadlineArticle } from '@/data/types/top-headlines.type';
+import { Image } from 'expo-image';
+import { memo } from 'react';
+import { Linking, Platform, StyleSheet, TouchableOpacity } from 'react-native';
 import { ThemedText } from './themed-text';
 import { ThemedView } from './themed-view';
-import { TopHeadlineArticle, EverythingArticle } from '@/data/types/top-headlines';
 
 type Article = TopHeadlineArticle | EverythingArticle;
 
@@ -10,7 +13,7 @@ interface ArticleCardProps {
   onPress?: () => void;
 }
 
-export function ArticleCard({ article, onPress }: ArticleCardProps) {
+ function ArticleCardComponent({ article, onPress }: ArticleCardProps) {
   const handlePress = () => {
     if (onPress) {
       onPress();
@@ -50,15 +53,16 @@ export function ArticleCard({ article, onPress }: ArticleCardProps) {
       onPress={handlePress}
       activeOpacity={0.7}
     >
-      <ThemedView style={styles.cardContent}>
+      <ThemedView 
+        style={styles.cardContent}
+        lightColor="#ffffff"
+        darkColor="#1f1f1f"
+      >
         {hasValidImage ? (
           <Image
             source={{ uri: article.urlToImage }}
             style={styles.image}
-            resizeMode="cover"
-            onError={() => {
-              // Image failed to load, but we'll keep the placeholder fallback in the component
-            }}
+            contentFit="cover"
           />
         ) : (
           <ThemedView style={[styles.image, styles.imagePlaceholder]}>
@@ -86,34 +90,50 @@ export function ArticleCard({ article, onPress }: ArticleCardProps) {
   );
 }
 
+const ArticleCard = memo(ArticleCardComponent, (prevProps, nextProps) => {
+  return prevProps.article.url === nextProps.article.url;
+});
+
+export default ArticleCard
+
 const styles = StyleSheet.create({
   card: {
     marginHorizontal: 16,
     marginVertical: 8,
-    borderRadius: 12,
+    borderRadius: 16,
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.06,
+        shadowRadius: 10,
+      },
+      android: {
+        elevation: 3,
+      },
+    }),
   },
   cardContent: {
     flexDirection: 'row',
-    backgroundColor: 'transparent',
+    borderRadius: 16,
+    padding: 14,
+    minHeight: 120,
   },
   image: {
     width: 120,
     height: 120,
-    borderRadius: 8,
+    borderRadius: 12,
+    backgroundColor: '#f5f5f5',
   },
   imagePlaceholder: {
-    backgroundColor: '#e0e0e0',
+    backgroundColor: '#e8e8e8',
     justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: 12,
   },
   placeholderText: {
     fontSize: 12,
@@ -121,25 +141,27 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     flex: 1,
-    paddingLeft: 12,
-    paddingRight: 8,
+    paddingLeft: 14,
+    paddingRight: 4,
     justifyContent: 'space-between',
-    backgroundColor: 'transparent',
   },
   title: {
-    marginBottom: 6,
+    marginBottom: 8,
     fontSize: 16,
+    lineHeight: 22,
   },
   description: {
     fontSize: 14,
-    marginBottom: 8,
-    opacity: 0.8,
+    marginBottom: 10,
+    opacity: 0.75,
+    lineHeight: 20,
   },
   metaContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginTop: 'auto',
+    paddingTop: 6,
   },
   source: {
     fontSize: 12,

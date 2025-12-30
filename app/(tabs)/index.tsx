@@ -1,13 +1,13 @@
-import { StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, RefreshControl } from 'react-native';
-import { ThemedView } from '@/components/themed-view';
+import ArticleCard from '@/components/article-card';
 import { ThemedText } from '@/components/themed-text';
-import { useGetTopHeadlinesQuery } from '@/data/api/news-api';
-import { useSelectedSources } from '@/hooks/use-selected-sources';
-import { ArticleCard } from '@/components/article-card';
-import { useRouter } from 'expo-router';
+import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Colors } from '@/constants/theme';
+import { useGetTopHeadlinesQuery } from '@/data/api/news-api';
+import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useSelectedSources } from '@/hooks/use-selected-sources';
+import { useRouter } from 'expo-router';
+import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, TouchableOpacity } from 'react-native';
 
 export default function HomeScreen() {
   const router = useRouter();

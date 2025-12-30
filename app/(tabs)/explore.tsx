@@ -1,15 +1,15 @@
-import { StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, Switch } from 'react-native';
+import ArticleCard from '@/components/article-card';
+import { SearchBar } from '@/components/search-bar';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { SearchBar } from '@/components/search-bar';
-import { ArticleCard } from '@/components/article-card';
+import { IconSymbol } from '@/components/ui/icon-symbol';
+import { Colors } from '@/constants/theme';
 import { useGetEverythingQuery } from '@/data/api/news-api';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useDebounce } from '@/hooks/use-debounce';
 import { useSelectedSources } from '@/hooks/use-selected-sources';
 import { useState } from 'react';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { Colors } from '@/constants/theme';
+import { ActivityIndicator, FlatList, StyleSheet, Switch } from 'react-native';
 
 export default function ExploreScreen() {
   const [searchQuery, setSearchQuery] = useState('');
