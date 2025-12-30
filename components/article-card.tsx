@@ -69,7 +69,7 @@ interface ArticleCardProps {
             <ThemedText style={styles.placeholderText}>No Image</ThemedText>
           </ThemedView>
         )}
-        <ThemedView style={styles.textContainer}>
+        <ThemedView lightColor="#ffffff" darkColor="#1f1f1f" style={styles.textContainer}>
           <ThemedText type="defaultSemiBold" style={styles.title} numberOfLines={2}>
             {article.title}
           </ThemedText>
@@ -78,7 +78,7 @@ interface ArticleCardProps {
               {article.description}
             </ThemedText>
           )}
-          <ThemedView style={styles.metaContainer}>
+          <ThemedView lightColor="#ffffff" darkColor="#1f1f1f" style={styles.metaContainer}>
             <ThemedText style={styles.source}>{article.source.name}</ThemedText>
             {article.publishedAt && (
               <ThemedText style={styles.date}>{formatDate(article.publishedAt)}</ThemedText>
