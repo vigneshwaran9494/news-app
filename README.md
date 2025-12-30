@@ -4,7 +4,7 @@ A React Native news application built with Expo that displays top headlines and 
 
 ## Demo
 
-<video src="https://raw.githubusercontent.com/vigneshwaran9494/news-app/main/demo/news_app_demo.mp4" controls width="100%"></video>
+https://raw.githubusercontent.com/vigneshwaran9494/news-app/main/demo/news_app_demo.mp4
 
 ## Features
 
