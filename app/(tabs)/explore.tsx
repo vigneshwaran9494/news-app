@@ -92,7 +92,7 @@ export default function ExploreScreen() {
           </ThemedView>
         )}
 
-        {hasResults && (
+        {hasResults && shouldSearch && (
           <>
             <ThemedView style={styles.resultsHeader}>
               <ThemedText style={styles.resultsCount}>
@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 40,
+    marginBottom: 20,
   },
   emptyTitle: {
     marginTop: 16,
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
   },
   resultsHeader: {
     paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingVertical: 2,
   },
   resultsCount: {
     fontSize: 14,
