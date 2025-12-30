@@ -2,6 +2,10 @@
 
 A React Native news application built with Expo that displays top headlines and allows you to explore news articles.
 
+## Demo
+
+<video src="https://raw.githubusercontent.com/vigneshwaran9494/news-app/main/demo/news_app_demo.mp4" controls width="100%"></video>
+
 ## Features
 
 - View top headlines from selected news sources
